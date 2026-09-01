@@ -72,6 +72,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
               result: 'starting' as const,
               message: i18n('Not ready to edit documents'),
             }),
+      // First start initialises PostgreSQL, RabbitMQ and Redis and generates
+      // the font list before nginx serves anything, which upstream and this
+      // package both describe as taking minutes. Without this the check reports
+      // a hard failure for that whole window.
+      gracePeriod: 600_000,
     },
     requires: [],
   })

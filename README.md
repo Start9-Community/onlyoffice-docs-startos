@@ -111,7 +111,7 @@ One check, on the daemon itself.
 
 **Editor** (daemon `documentserver`) — fetches `/healthcheck` over the container bridge, which returns `true` only once the document service is up behind nginx.
 
-A failure during the first several minutes after a start is expected and not a fault; see the first-run note above. A failure that persists past ten minutes or so is usually memory — this service wants several gigabytes, and a server that cannot give it that will have processes killed as they start, which shows up here as a check that never goes green. The service log names which supervised process died.
+It carries a ten-minute grace period, so the long first start reads as *starting* rather than failed; see the first-run note above. A failure that survives it is usually memory — this service wants several gigabytes, and a server that cannot give it that will have processes killed as they start, which shows up here as a check that never goes green. The service log names which supervised process died.
 
 ## Backups and Restore
 
