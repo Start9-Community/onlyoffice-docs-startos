@@ -123,7 +123,7 @@ A restored instance keeps its JWT secret, so it stays paired with a Nextcloud re
 
 ## Limitations and Differences
 
-1. **Heavy.** Upstream recommends 4 GB of memory and 2 GB of swap for this service alone, on top of Nextcloud and everything else on the server. It is the single largest service in the registry by that measure, and a small server should run Collabora Online instead.
+1. **Heavy, and worth it only in a narrow case.** Upstream recommends 4 GB of memory and 2 GB of swap for this service alone, on top of Nextcloud and everything else on the server. Both suites edit OOXML without losing content — measured on a complex Word document, each preserved the text byte-for-byte along with every table, cell, image, hyperlink, bookmark, footnote, endnote and field. The difference is that this one returns the file structurally identical, where LibreOffice resolves style-inherited formatting into direct formatting on each run. That is invisible on screen and matters only when a large corpus of style-dependent documents keeps round-tripping to Microsoft Office; for anything else Collabora Online is the right package.
 2. **No address of its own.** ONLYOFFICE is not reachable except through Nextcloud, and there is no way to reach the editor while Nextcloud is stopped.
 3. **No admin panel.** The Community edition ships none — it is an Enterprise feature — so there is no administrative interface to expose, and no credentials for one.
 4. **The bundled database is not backed up.** In-flight editing sessions do not survive a restore.

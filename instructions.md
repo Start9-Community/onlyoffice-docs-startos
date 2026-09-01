@@ -1,6 +1,8 @@
 # ONLYOFFICE Docs
 
-ONLYOFFICE Docs has no address of its own and no interface to open. Nextcloud serves the editor, so everything below happens on your Nextcloud. It is also a demanding service — if your server is short of memory, Collabora Online does the same job in about a quarter of the space.
+ONLYOFFICE Docs has no address of its own and no interface to open. Nextcloud serves the editor, so everything below happens on your Nextcloud.
+
+Most people should install Collabora Online instead. This one earns its size in a narrow case: a large body of complex documents that keeps moving between your server and Microsoft Office. See **Is this the one you want?** below before going further.
 
 ## Documentation
 
@@ -27,6 +29,16 @@ The first start takes several minutes while the service sets up its database and
 
 You never open ONLYOFFICE directly. In Nextcloud, click a document, spreadsheet, presentation or PDF and it opens in the editor. Create new ones from the **+** menu in Files.
 
+## Is this the one you want?
+
+Both this and Collabora Online edit Word, Excel and PowerPoint files, and neither loses anything: text, tables, images, links, footnotes and page layout all survive either one, and a document looks the same on screen in both.
+
+They differ in what they write back to the file. This one stores documents in the same format Word and Excel use, so a file comes back exactly as it went in. Collabora is built on LibreOffice: it reads the file into its own model and writes it out again, spelling out on each paragraph the formatting the document had left to its styles. You will not see that on screen. You will see it if someone later opens the file in Word and changes a style, because the parts that were spelled out no longer follow it.
+
+For a handful of documents that costs you nothing — you would never notice, and you could repair one by hand. It adds up when there are hundreds, when the styles are doing real work (a house template, a legal or academic format), and when the files keep going back to Word. That is the case this service is for.
+
+If that is not your situation, install Collabora Online: it does the same job in about a quarter of the memory and opens more kinds of file besides.
+
 ## Limitations
 
-This service wants around 4 GB of memory to itself, on top of Nextcloud. On a server that cannot spare it you will see the service fail to come up rather than run slowly, and Collabora Online is the better choice.
+This service wants around 4 GB of memory to itself, on top of Nextcloud. On a server that cannot spare it you will see the service fail to come up rather than run slowly.
