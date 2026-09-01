@@ -5,7 +5,7 @@ export const manifest = setupManifest({
   id: 'onlyoffice-docs',
   title: 'ONLYOFFICE Docs',
   license: 'AGPL-3.0-only',
-  packageRepo: 'https://github.com/Start9Labs/onlyoffice-docs-startos',
+  packageRepo: 'https://github.com/Start9-Community/onlyoffice-docs-startos',
   upstreamRepo: 'https://github.com/ONLYOFFICE/DocumentServer',
   marketingUrl: 'https://www.onlyoffice.com',
   donationUrl: null,
