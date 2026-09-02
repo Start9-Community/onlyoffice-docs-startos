@@ -18,10 +18,9 @@ Your files stay in Nextcloud; ONLYOFFICE only holds them while a document is ope
 
 Install Nextcloud first — ONLYOFFICE does nothing without it.
 
-1. In Nextcloud's web interface, open **Apps** and install **ONLYOFFICE**. Leave it enabled.
-2. Run Nextcloud's **Office Suite** action in StartOS and choose ONLYOFFICE Docs.
+Run Nextcloud's **Office Suite** action in StartOS and choose ONLYOFFICE Docs. That is the whole setup — Nextcloud installs the **ONLYOFFICE** app it needs and points itself at this service, and there is nothing to set here.
 
-That is all — there is nothing to set here. Open any document in Nextcloud Files to check it works.
+Open any document in Nextcloud Files to check it works.
 
 The first start takes several minutes while the service sets up its database and font list, and it will show as not ready until it finishes. That is normal, and only happens once.
 

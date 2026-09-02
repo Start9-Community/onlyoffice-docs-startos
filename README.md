@@ -95,7 +95,7 @@ There is nothing to configure. The JWT secret is generated on install, and the s
 
 First start is slow — the container initializes PostgreSQL, RabbitMQ and Redis and generates its font list before it serves anything. Several minutes is normal, and the health check stays red throughout.
 
-The ONLYOFFICE app for Nextcloud is not installed by this package. The user installs it from Nextcloud's own app store, and Nextcloud's Office Suite action wires the two together.
+The ONLYOFFICE app for Nextcloud is installed by the **Nextcloud** package when a user selects this service as their office suite, and Nextcloud points itself at this one. Nothing on this side participates.
 
 ## Actions
 
