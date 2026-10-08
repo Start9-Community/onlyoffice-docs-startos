@@ -2,7 +2,7 @@ import { FileHelper, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
 import { SHARED_SUBPATH } from '../utils'
 
-const shape = z.object({
+const shape = z.looseObject({
   jwtSecret: z.string().optional().catch(undefined),
 })
 

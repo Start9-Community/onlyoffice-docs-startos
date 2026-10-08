@@ -69,7 +69,7 @@ The package owns two files, both on the unmounted `startos` volume, and both hol
 | `storeJson` | `store.json` | Generated once, on install | Nothing |
 | `jwtSecretFile` | `shared/jwt-secret` | Written alongside it, on install | Nothing |
 
-Both hold the same value: the JWT secret that authenticates every request between Nextcloud and this service. It is generated once at install and never rotated or re-asserted. The second copy exists as a bare file so Nextcloud can mount that one subpath read-only and read nothing else — `store.json` sits beside it and stays out of view.
+Both hold the same value: the JWT secret that authenticates every request between Nextcloud and this service. It is generated once at install and never rotated or re-asserted. The second copy exists as a bare file in a directory of its own, `shared/`, so Nextcloud can mount that directory read-only and read nothing else — `store.json` sits outside it and stays out of view.
 
 Because the secret is delivered as an environment variable, it is read only at container start; nothing re-reads it while running.
 

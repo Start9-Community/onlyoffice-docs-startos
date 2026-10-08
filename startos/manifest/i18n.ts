@@ -1,9 +1,11 @@
 export const short = {
   en_US: 'The office suite behind the ONLYOFFICE app for Nextcloud',
-  es_ES: 'La suite ofimática que impulsa la aplicación ONLYOFFICE para Nextcloud',
+  es_ES:
+    'La suite ofimática que impulsa la aplicación ONLYOFFICE para Nextcloud',
   de_DE: 'Die Office-Suite hinter der ONLYOFFICE-App für Nextcloud',
   pl_PL: 'Pakiet biurowy stojący za aplikacją ONLYOFFICE dla Nextcloud',
-  fr_FR: "La suite bureautique derrière l'application ONLYOFFICE pour Nextcloud",
+  fr_FR:
+    "La suite bureautique derrière l'application ONLYOFFICE pour Nextcloud",
 }
 
 export const long = {
