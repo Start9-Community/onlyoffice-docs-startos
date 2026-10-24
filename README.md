@@ -34,28 +34,29 @@ This package runs the Community edition image and wires it to Nextcloud entirely
 
 ## Image and Container Runtime
 
-The package wraps the upstream `onlyoffice/documentserver` image unmodified and runs its default entrypoint.
+The package builds on the upstream `onlyoffice/documentserver` image, adding one layer that refreshes its system CA bundle, and runs its default entrypoint. The layer is temporary and comes out once upstream ships an image built on a fixed store.
 
 | | |
 | --- | --- |
-| Image source | Upstream `onlyoffice/documentserver` (Community edition), unmodified |
+| Image source | Upstream `onlyoffice/documentserver` (Community edition), with the Ubuntu `ca-certificates` package upgraded (`Dockerfile`) |
 | Architectures | x86_64, aarch64 |
 | Entrypoint | Default (`/app/ds/run-document-server.sh`), `runAsInit: true` |
 | Subcontainers | `documentserver` — the only container, but it runs many processes |
 
-That single container is a whole stack under `supervisord`: nginx, PostgreSQL, RabbitMQ, Redis, and the Node document and conversion services. `runAsInit: true` is required — `supervisord` aborts unless it is PID 1. The Community edition cannot be pointed at an external database: the `DB_*` environment variables exist only in the Enterprise and Developer editions, so the bundled engines are not a packaging choice.
+That single container runs nginx and, under `supervisord`, the document and conversion services. `runAsInit: true` is required — `supervisord` aborts unless it is PID 1. The Community edition carries no database, message broker or cache: PostgreSQL, RabbitMQ and Redis ship only in the Enterprise and Developer images, and the `DB_*`, `AMQP_*` and `REDIS_*` variables are ignored here.
+
+The document services are Node programs with Node's own root certificates compiled in; they do not read the system CA bundle.
 
 Configuration is entirely by environment variable, read once at container start.
 
 ## Volume and Data Layout
 
-Three volumes hold container state and a fourth holds this package's own. Documents themselves live in Nextcloud; what is here is the working state of editing sessions.
+Two volumes hold container state and a third holds this package's own. Documents themselves live in Nextcloud; what is here is the working state of editing sessions.
 
 | Volume | Mount point | Contents |
 | --- | --- | --- |
 | `main` | `/var/lib/onlyoffice` | Editing cache and the forgotten-files store |
 | `data` | `/var/www/onlyoffice/Data` | The upstream data store |
-| `db` | `/var/lib/postgresql` | The bundled PostgreSQL |
 | `startos` | not mounted | `store.json` and the shared JWT secret |
 
 `/var/log/onlyoffice` is deliberately not mounted — the service log is where those lines belong. The fonts directory the image declares is not mounted either, since nothing in the package adds fonts to it.
@@ -93,7 +94,7 @@ ONLYOFFICE fetches and saves documents over the host bridge, so Nextcloud has to
 
 There is nothing to configure. The JWT secret is generated on install, and the service starts and runs without any user input.
 
-First start is slow — the container initializes PostgreSQL, RabbitMQ and Redis and generates its font list before it serves anything. Several minutes is normal, and the health check stays red throughout.
+First start is slow — the container generates its font list before it serves anything. Several minutes is normal, and the health check stays red throughout.
 
 The ONLYOFFICE app for Nextcloud is installed by the **Nextcloud** package when a user selects this service as their office suite, and Nextcloud points itself at this one. Nothing on this side participates.
 
@@ -117,8 +118,6 @@ It carries a ten-minute grace period, so the long first start reads as *starting
 
 The `main`, `data` and `startos` volumes are copied wholesale (`ofVolumes`). Nothing is dumped.
 
-`db` is deliberately excluded. It is the bundled PostgreSQL, and a file copy of a running Postgres is a torn one that can refuse to start; what it holds is the set of editing sessions in flight at backup time, which is worthless by the time anyone restores. It is rebuilt empty on first start.
-
 A restored instance keeps its JWT secret, so it stays paired with a Nextcloud restored alongside it and needs nothing re-entered. Restoring only one of the two breaks the pairing — the secrets no longer match, and Nextcloud reports the editors as unavailable until both sides agree again.
 
 ## Limitations and Differences
@@ -126,8 +125,7 @@ A restored instance keeps its JWT secret, so it stays paired with a Nextcloud re
 1. **Heavy, and worth it only in a narrow case.** Upstream recommends 4 GB of memory and 2 GB of swap for this service alone, on top of Nextcloud and everything else on the server. Both suites edit OOXML without losing content — measured on a complex Word document, each preserved the text byte-for-byte along with every table, cell, image, hyperlink, bookmark, footnote, endnote and field. The difference is that this one returns the file structurally identical, where LibreOffice resolves style-inherited formatting into direct formatting on each run. That is invisible on screen and matters only when a large corpus of style-dependent documents keeps round-tripping to Microsoft Office; for anything else Collabora Online is the right package.
 2. **No address of its own.** ONLYOFFICE is not reachable except through Nextcloud, and there is no way to reach the editor while Nextcloud is stopped.
 3. **No admin panel.** The Community edition ships none — it is an Enterprise feature — so there is no administrative interface to expose, and no credentials for one.
-4. **The bundled database is not backed up.** In-flight editing sessions do not survive a restore.
-5. **Community edition.** ONLYOFFICE's Enterprise builds, their mobile web editors, white-labelling, and the support contract are not what this package ships. The 20-connection limit that used to define the Community edition was removed upstream and does not apply.
+4. **Community edition.** ONLYOFFICE's Enterprise builds, their mobile web editors, white-labelling, and the support contract are not what this package ships. The 20-connection limit that used to define the Community edition was removed upstream and does not apply.
 
 ---
 
@@ -135,13 +133,12 @@ A restored instance keeps its JWT secret, so it stays paired with a Nextcloud re
 
 ```yaml
 package_id: onlyoffice-docs
-image: onlyoffice/documentserver
+image: onlyoffice/documentserver + root Dockerfile (CA store upgrade)
 architectures: [x86_64, aarch64]
 subcontainers: [documentserver]
 volumes:
   main: /var/lib/onlyoffice
   data: /var/www/onlyoffice/Data
-  db: /var/lib/postgresql
   startos: not mounted
 file_models:
   - store.json
