@@ -22,7 +22,7 @@ Run Nextcloud's **Office Suite** action in StartOS and choose ONLYOFFICE Docs. T
 
 Open any document in Nextcloud Files to check it works.
 
-The first start takes several minutes while the service sets up its database and font list, and it will show as not ready until it finishes. That is normal, and only happens once.
+The first start takes several minutes while the service builds its font list, and it will show as not ready until it finishes. That is normal, and only happens once.
 
 ## Using ONLYOFFICE Docs
 

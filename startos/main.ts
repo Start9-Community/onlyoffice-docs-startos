@@ -32,19 +32,13 @@ export const main = sdk.setupMain(async ({ effects }) => {
           subpath: null,
           mountpoint: '/var/www/onlyoffice/Data',
           readonly: false,
-        })
-        .mountVolume({
-          volumeId: 'db',
-          subpath: null,
-          mountpoint: '/var/lib/postgresql',
-          readonly: false,
         }),
       'documentserver',
     ),
     exec: {
       command: sdk.useEntrypoint(),
-      // The image runs supervisord, which manages nginx, Postgres, RabbitMQ,
-      // Redis and the document services, and aborts unless it is PID 1.
+      // The image runs supervisord, which manages the document services, and
+      // aborts unless it is PID 1.
       runAsInit: true,
       env: {
         JWT_ENABLED: 'true',
@@ -72,10 +66,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
               result: 'starting' as const,
               message: i18n('Not ready to edit documents'),
             }),
-      // First start initialises PostgreSQL, RabbitMQ and Redis and generates
-      // the font list before nginx serves anything, which upstream and this
-      // package both describe as taking minutes. Without this the check reports
-      // a hard failure for that whole window.
+      // First start generates the font list before nginx serves anything, which
+      // can take minutes. Without this the check reports a hard failure for that
+      // whole window.
       gracePeriod: 600_000,
     },
     requires: [],

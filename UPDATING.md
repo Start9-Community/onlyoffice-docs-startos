@@ -22,7 +22,7 @@ Upstream's own release notes are on the [DocumentServer releases page](https://g
 
 ## Making the bump
 
-1. Set the new tag on `images.documentserver.source.dockerTag` in `startos/manifest/index.ts`.
+1. Set the new tag on `images.documentserver.source.dockerBuild.buildArgs.IMAGE` in `startos/manifest/index.ts`. The `Dockerfile` layered on it refreshes the CA bundle and fails the build if the bundle still carries the distrusted emSign root.
 2. Set `version` in `startos/versions/current.ts`, tracking upstream's first three parts as `<major>.<minor>.<patch>:<revision>`. A packaging-only change bumps the revision after the colon.
 3. Write release notes describing what the user will notice. Upstream's notes cover the editors themselves.
 
@@ -34,4 +34,4 @@ The environment variables this package sets are read once, at container start, b
 
 The virtual-path support this package relies on is nginx's `map $http_x_forwarded_prefix $the_prefix` in `includes/http-common.conf`, plus the matching `X-Forwarded-Host` and `X-Forwarded-Proto` maps. If a release drops or renames those, the editor will load from the wrong origin — check that file in the new image before assuming anything else.
 
-Also confirm `DB_TYPE` and friends are still Enterprise-only. If the Community edition ever gains external-database support, this package should stop carrying a bundled PostgreSQL on a volume of its own.
+The document services are `pkg`-built Node binaries that ignore `NODE_OPTIONS` and treat command-line flags as their own arguments, so they keep Node's compiled-in roots whatever the system bundle holds. Check the embedded Node version with `PKG_EXECPATH=PKG_INVOKE_NODEJS /var/www/onlyoffice/documentserver/server/DocService/docservice -p process.version`.

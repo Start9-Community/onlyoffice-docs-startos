@@ -10,10 +10,14 @@ export const manifest = setupManifest({
   marketingUrl: 'https://www.onlyoffice.com',
   donationUrl: null,
   description: { short, long },
-  volumes: ['main', 'data', 'db', 'startos'],
+  volumes: ['main', 'data', 'startos'],
   images: {
     documentserver: {
-      source: { dockerTag: 'onlyoffice/documentserver:9.4.0.1' },
+      source: {
+        dockerBuild: {
+          buildArgs: { IMAGE: 'onlyoffice/documentserver:10.0.0.1' },
+        },
+      },
       arch: ['x86_64', 'aarch64'],
     },
   },
