@@ -23,14 +23,9 @@ Upstream's own release notes are on the [DocumentServer releases page](https://g
 ## Making the bump
 
 1. Set the new tag on `images.documentserver.source.dockerBuild.buildArgs.IMAGE` in `startos/manifest/index.ts`. The `Dockerfile` layered on it refreshes the CA bundle and fails the build if the bundle still carries the distrusted emSign root.
-2. Set `version` in `startos/versions/current.ts`, tracking upstream's first three parts as `<major>.<minor>.<patch>:<revision>`. A packaging-only change bumps the revision after the colon.
-3. Write release notes describing what the user will notice. Upstream's notes cover the editors themselves.
+2. Set `version` in `startos/versions/current.ts`, tracking upstream's first three parts as `<major>.<minor>.<patch>:<revision>`.
 
 ## What to watch for
-
-The environment variables this package sets are read once, at container start, by `run-document-server.sh`. `ALLOW_PRIVATE_IP_ADDRESS` is the load-bearing one: without it ONLYOFFICE refuses to fetch documents from Nextcloud's bridge address, and every document fails to open with a download error rather than anything that names the cause.
-
-`JWT_HEADER` must stay `AuthorizationJwt` and must match what Nextcloud's connector is configured with. The plain `Authorization` header collides with Nextcloud's own.
 
 The virtual-path support this package relies on is nginx's `map $http_x_forwarded_prefix $the_prefix` in `includes/http-common.conf`, plus the matching `X-Forwarded-Host` and `X-Forwarded-Proto` maps. If a release drops or renames those, the editor will load from the wrong origin — check that file in the new image before assuming anything else.
 
