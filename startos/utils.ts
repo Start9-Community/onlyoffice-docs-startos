@@ -14,9 +14,5 @@ export const nextcloudPort = 80
 // to the same value; `Authorization` collides with Nextcloud's own auth.
 export const JWT_HEADER = 'AuthorizationJwt'
 
-// Where a dependent mounts to read the shared JWT secret. Its own subdirectory
-// so `store.json`, which sits beside it on the same volume, stays out of view.
-export const SHARED_SUBPATH = './shared/jwt-secret'
-
 export const getSecret = () =>
   utils.getDefaultString({ charset: 'a-z,A-Z,0-9', len: 48 })

@@ -10,7 +10,7 @@ export const manifest = setupManifest({
   marketingUrl: 'https://www.onlyoffice.com',
   donationUrl: null,
   description: { short, long },
-  volumes: ['main', 'data', 'startos'],
+  volumes: ['main', 'data', 'startos', 'public'],
   images: {
     documentserver: {
       source: {

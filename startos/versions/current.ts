@@ -1,16 +1,25 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
+import { rm } from 'fs/promises'
+import { sdk } from '../sdk'
 
 export const current = VersionInfo.of({
-  version: '10.0.0:0',
+  version: '10.0.0:1',
   releaseNotes: {
-    en_US: 'Updated ONLYOFFICE Docs to 10.0.0.',
-    es_ES: 'ONLYOFFICE Docs actualizado a 10.0.0.',
-    de_DE: 'ONLYOFFICE Docs auf 10.0.0 aktualisiert.',
-    pl_PL: 'Zaktualizowano ONLYOFFICE Docs do wersji 10.0.0.',
-    fr_FR: 'ONLYOFFICE Docs mis à jour vers la version 10.0.0.',
+    en_US: 'StartOS package improvements; no change to ONLYOFFICE Docs.',
+    es_ES: 'Mejoras del paquete de StartOS; sin cambios en ONLYOFFICE Docs.',
+    de_DE:
+      'Verbesserungen am StartOS-Paket; keine Änderung an ONLYOFFICE Docs.',
+    pl_PL: 'Ulepszenia pakietu StartOS; bez zmian w ONLYOFFICE Docs.',
+    fr_FR:
+      'Améliorations du paquet StartOS ; aucun changement pour ONLYOFFICE Docs.',
   },
   migrations: {
-    up: async ({ effects }) => {},
+    up: async () => {
+      await rm(sdk.volumes.startos.subpath('shared'), {
+        recursive: true,
+        force: true,
+      })
+    },
     down: IMPOSSIBLE,
   },
 })
