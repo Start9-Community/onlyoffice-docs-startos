@@ -1,6 +1,5 @@
 import { FileHelper, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
-import { SHARED_SUBPATH } from '../utils'
 
 const shape = z.looseObject({
   jwtSecret: z.string().optional().catch(undefined),
@@ -13,9 +12,8 @@ export const storeJson = FileHelper.json(
   shape,
 )
 
-// The same secret as `store.json`'s `jwtSecret`, alone in a file so Nextcloud
-// can mount this subpath read-only and read nothing else.
+// A copy of `jwtSecret` on the `public` volume, which Nextcloud mounts read-only.
 export const jwtSecretFile = FileHelper.string({
-  base: sdk.volumes.startos,
-  subpath: SHARED_SUBPATH,
+  base: sdk.volumes.public,
+  subpath: './jwt-secret',
 })

@@ -51,26 +51,27 @@ Configuration is entirely by environment variable, read once at container start.
 
 ## Volume and Data Layout
 
-Two volumes hold container state and a third holds this package's own. Documents themselves live in Nextcloud; what is here is the working state of editing sessions.
+Two volumes hold container state and two hold this package's own. Documents themselves live in Nextcloud; what is here is the working state of editing sessions.
 
 | Volume | Mount point | Contents |
 | --- | --- | --- |
 | `main` | `/var/lib/onlyoffice` | Editing cache and the forgotten-files store |
 | `data` | `/var/www/onlyoffice/Data` | The upstream data store |
-| `startos` | not mounted | `store.json` and the shared JWT secret |
+| `startos` | not mounted | `store.json` |
+| `public` | not mounted | The JWT secret Nextcloud reads |
 
 `/var/log/onlyoffice` is deliberately not mounted — the service log is where those lines belong. The fonts directory the image declares is not mounted either, since nothing in the package adds fonts to it.
 
 ## File Models
 
-The package owns two files, both on the unmounted `startos` volume, and both holding StartOS-side state rather than upstream configuration. ONLYOFFICE has no configuration file this package writes — every setting reaches it as an environment variable.
+The package owns two files, on the unmounted `startos` and `public` volumes, both holding StartOS-side state rather than upstream configuration. ONLYOFFICE has no configuration file this package writes — every setting reaches it as an environment variable.
 
 | Model | File | How it is seeded | What rewrites it |
 | --- | --- | --- | --- |
-| `storeJson` | `store.json` | Generated once, on install | Nothing |
-| `jwtSecretFile` | `shared/jwt-secret` | Written alongside it, on install | Nothing |
+| `storeJson` | `store.json` | Generated on the first init that finds no secret | Nothing |
+| `jwtSecretFile` | `jwt-secret` on `public` | Copied from `store.json` on every init | Nothing |
 
-Both hold the same value: the JWT secret that authenticates every request between Nextcloud and this service. It is generated once at install and never rotated or re-asserted. The second copy exists as a bare file in a directory of its own, `shared/`, so Nextcloud can mount that directory read-only and read nothing else — `store.json` sits outside it and stays out of view.
+Both hold the same value: the JWT secret that authenticates every request between Nextcloud and this service. It is never rotated. `store.json` is the source of truth; the copy on the `public` volume, which Nextcloud mounts read-only, is rewritten from it on every init.
 
 Because the secret is delivered as an environment variable, it is read only at container start; nothing re-reads it while running.
 
@@ -116,7 +117,7 @@ It carries a ten-minute grace period, so the long first start reads as *starting
 
 ## Backups and Restore
 
-The `main`, `data` and `startos` volumes are copied wholesale (`ofVolumes`). Nothing is dumped.
+The `main`, `data` and `startos` volumes are copied wholesale (`ofVolumes`). Nothing is dumped. The `public` volume is left out: init rewrites it from `store.json`.
 
 A restored instance keeps its JWT secret, so it stays paired with a Nextcloud restored alongside it and needs nothing re-entered. Restoring only one of the two breaks the pairing — the secrets no longer match, and Nextcloud reports the editors as unavailable until both sides agree again.
 
@@ -140,9 +141,10 @@ volumes:
   main: /var/lib/onlyoffice
   data: /var/www/onlyoffice/Data
   startos: not mounted
+  public: not mounted
 file_models:
   - store.json
-  - shared/jwt-secret
+  - jwt-secret (public volume)
 startos_managed_env_vars:
   - JWT_ENABLED
   - JWT_SECRET
